@@ -78,20 +78,22 @@ searchButton.addEventListener("click", (e) => {
     });
     gettingActiveTab.then((tabs) => {
         browser.tabs.sendMessage(tabs[0].id, {
-            regex: regexInput.value,
+            regex: asInput(regexInput)?.value,
             flags: getFlags(),
-            template: templateInput.value,
+            template: asInput(templateInput)?.value,
             action: "search",
-            ignoreHTML: IgnoreHTMLCheckbox.checked
+            ignoreHTML: asInput(IgnoreHTMLCheckbox)?.checked
         }).then(getResponse);
     });
     // callback function when we get the response from the script on the tab
-    function getResponse(handleResponse, handleError) {
-        // reset the result textarea
-        resultTextarea.value = "";
+    function getResponse(handleResponse) {
         var matches = handleResponse.results;
-        for (var i = 0; i < matches.length; i++) {
-            resultTextarea.value += matches[i];
+        // reset the result textarea
+        if (isTextArea(resultTextarea)) {
+            resultTextarea.value = "";
+            for (var i = 0; i < matches.length; i++) {
+                resultTextarea.value += matches[i];
+            }
         }
         if (matches.length == 0 || matches == undefined) {
             matchesCount.innerText = "No Matches Found";
@@ -115,10 +117,10 @@ highlightButton.addEventListener("click", (e) => {
     });
     gettingActiveTab.then((tabs) => {
         browser.tabs.sendMessage(tabs[0].id, {
-            regex: regexInput.value,
+            regex: asInput(regexInput)?.value,
             flags: getFlags(),
             action: "highlight",
-            ignoreHTML: IgnoreHTMLCheckbox.checked,
+            ignoreHTML: asInput(IgnoreHTMLCheckbox)?.checked,
             highlightColor: highlightColor,
             highlightBorderColor: highlightBorderColor
         });
@@ -137,18 +139,18 @@ nextButton.addEventListener("click", (e) => {
     });
     gettingActiveTab.then((tabs) => {
         browser.tabs.sendMessage(tabs[0].id, {
-            regex: regexInput.value,
+            regex: asInput(regexInput)?.value,
             flags: getFlags(),
-            template: templateInput.value,
+            template: asInput(templateInput)?.value,
             action: "next",
-            ignoreHTML: IgnoreHTMLCheckbox.checked,
+            ignoreHTML: asInput(IgnoreHTMLCheckbox)?.checked,
             highlightColor: highlightColor,
             highlightBorderColor: highlightBorderColor,
             selectedItemIndex: selectedItemIndex
         }).then(getResponse);
     });
     // callback function when we get the response from the script on the tab
-    function getResponse(handleResponse, handleError) {
+    function getResponse(handleResponse) {
         try {
             var matches = handleResponse.results;
             if (handleResponse.selectedItemIndex > 0) {
@@ -159,9 +161,11 @@ nextButton.addEventListener("click", (e) => {
             selectedItemIndex = handleResponse.selectedItemIndex;
             // reset the result textarea
             if (selectedItemIndex <= 0) {
-                resultTextarea.value = "";
-                for (var i = 0; i < matches.length; i++) {
-                    resultTextarea.value += matches[i] + "\n";
+                if (isTextArea(resultTextarea)) {
+                    resultTextarea.value = "";
+                    for (var i = 0; i < matches.length; i++) {
+                        resultTextarea.value += matches[i] + "\n";
+                    }
                 }
                 if (matches.length == 0 || matches == undefined) {
                     matchesCount.innerText = "No Matches Found";
@@ -190,18 +194,18 @@ previousButton.addEventListener("click", (e) => {
     });
     gettingActiveTab.then((tabs) => {
         browser.tabs.sendMessage(tabs[0].id, {
-            regex: regexInput.value,
+            regex: asInput(regexInput)?.value,
             flags: getFlags(),
-            template: templateInput.value,
+            template: asInput(templateInput)?.value,
             action: "previous",
-            ignoreHTML: IgnoreHTMLCheckbox.checked,
+            ignoreHTML: asInput(IgnoreHTMLCheckbox)?.checked,
             highlightColor: highlightColor,
             highlightBorderColor: highlightBorderColor,
             selectedItemIndex: selectedItemIndex
         }).then(getResponse);
     });
     // callback function when we get the response from the script on the tab
-    function getResponse(handleResponse, handleError) {
+    function getResponse(handleResponse) {
         try {
             var matches = handleResponse.results;
             if (handleResponse.selectedItemIndex != matches.length - 1) {
@@ -211,9 +215,11 @@ previousButton.addEventListener("click", (e) => {
             }
             selectedItemIndex = handleResponse.selectedItemIndex;
             // reset the result textarea
-            resultTextarea.value = "";
-            for (var i = 0; i < matches.length; i++) {
-                resultTextarea.value += matches[i] + "\n";
+            if (isTextArea(resultTextarea)) {
+                resultTextarea.value = "";
+                for (var i = 0; i < matches.length; i++) {
+                    resultTextarea.value += matches[i] + "\n";
+                }
             }
             if (matches.length == 0 || matches == undefined) {
                 matchesCount.innerText = "No Matches Found";
@@ -232,13 +238,13 @@ previousButton.addEventListener("click", (e) => {
 // A function returns REGEX flags depending on user choices
 function getFlags() {
     var flags = ""; // start with empty flags
-    if (globalCheckbox.checked) {
+    if (asInput(globalCheckbox)?.checked) {
         flags += "g";
     }
-    if (caseInsensitiveCheckbox.checked) {
+    if (asInput(caseInsensitiveCheckbox)?.checked) {
         flags += "i";
     }
-    if (multilineCheckbox.checked) {
+    if (asInput(multilineCheckbox)?.checked) {
         flags += "m";
     }
     return flags;
@@ -247,26 +253,26 @@ function getFlags() {
 saveButton_modal.addEventListener("click", (e) => {
     // Get data
     var id = getID();
-    var name = profileNameInput_modal.value;
-    var regex = regexInput_modal.value;
-    var globalFlag = globalCheckbox_modal.checked;
-    var caseInsensitiveFlag = caseInsensitiveCheckbox_modal.checked;
-    var multilineFlag = multilineCheckbox_modal.checked;
-    var ignoreHTML = IgnoreHTMLCheckbox_modal.checked;
-    var template = templateInput_modal.value;
+    var name = asInput(profileNameInput_modal)?.value;
+    var regex = asInput(regexInput_modal)?.value;
+    var globalFlag = asInput(globalCheckbox_modal)?.checked;
+    var caseInsensitiveFlag = asInput(caseInsensitiveCheckbox_modal)?.checked;
+    var multilineFlag = asInput(multilineCheckbox_modal)?.checked;
+    var ignoreHTML = asInput(IgnoreHTMLCheckbox_modal)?.checked;
+    var template = asInput(templateInput_modal)?.value;
     // Check for the name , we need it to save the profile
     if (name.length == 0) {
         $("#name_alert_modal").show();
         return;
     }
     // make new object
-    profile = new profile(id, name, regex, globalFlag, caseInsensitiveFlag, multilineFlag, template, ignoreHTML);
+    var profile = new profile(id, name, regex, globalFlag, caseInsensitiveFlag, multilineFlag, template, ignoreHTML);
     // add the profile to the storage
     addProfile(profile);
 });
 // When the user clicks on profile we need to load it
 profilesList.addEventListener("click", (e) => {
-    const storageID = e.target.getAttribute("storageID");
+    const storageID = asAnchor(e.target)?.getAttribute("storageID");
     if (storageID == 'manage') {
         browser.runtime.openOptionsPage();
     }
@@ -276,7 +282,7 @@ profilesList.addEventListener("click", (e) => {
 });
 // Copy Result button event
 copyResultButton.addEventListener("click", (e) => {
-    resultTextarea.select();
+    asTextArea(resultTextarea)?.select();
     document.execCommand("Copy");
 });
 // sync modal with main inputs and store it for the next session if the user exits by mistake
@@ -318,7 +324,7 @@ smallFormCheckbox.addEventListener("change", (e) => {
     smallFormCheckboxChange(e);
 });
 function smallFormCheckboxChange(e) {
-    if (smallFormCheckbox.checked) {
+    if (asInput(smallFormCheckbox)?.checked) {
         document.querySelectorAll(".small-form").forEach((el) => {
             el.classList.remove("small-form");
             el.classList.add("big-form");
@@ -327,7 +333,9 @@ function smallFormCheckboxChange(e) {
             el.classList.remove("full-form");
             el.classList.add("small-form");
         });
-        fullFormCheckbox.checked = true;
+        if (isInput(fullFormCheckbox)) {
+            fullFormCheckbox.checked = true;
+        }
     }
     storeCurrent();
 }
@@ -335,7 +343,7 @@ fullFormCheckbox.addEventListener("change", (e) => {
     fullFormCheckboxChange(e);
 });
 function fullFormCheckboxChange(e) {
-    if (!fullFormCheckbox.checked) {
+    if (!asInput(fullFormCheckbox)?.checked) {
         document.querySelectorAll(".small-form").forEach((el) => {
             el.classList.remove("small-form");
             el.classList.add("full-form");
@@ -346,21 +354,39 @@ function fullFormCheckboxChange(e) {
             console.log(el);
         });
     }
-    smallFormCheckbox.checked = false;
+    if (isInput(smallFormCheckbox)) {
+        smallFormCheckbox.checked = false;
+    }
     storeCurrent();
 }
 // Reset Button Event
 resetButton.addEventListener("click", (e) => {
-    regexInput.value = "";
-    templateInput.value = "";
-    globalCheckbox.checked = false;
-    caseInsensitiveCheckbox.checked = false;
-    multilineCheckbox.checked = false;
-    IgnoreHTMLCheckbox.checked = false;
-    resultTextarea.value = "";
+    if (isInput(regexInput)) {
+        regexInput.value = "";
+    }
+    if (isInput(templateInput)) {
+        templateInput.value = "";
+    }
+    if (isInput(globalCheckbox)) {
+        globalCheckbox.checked = false;
+    }
+    if (isInput(caseInsensitiveCheckbox)) {
+        caseInsensitiveCheckbox.checked = false;
+    }
+    if (isInput(multilineCheckbox)) {
+        multilineCheckbox.checked = false;
+    }
+    if (isInput(IgnoreHTMLCheckbox)) {
+        IgnoreHTMLCheckbox.checked = false;
+    }
+    if (isTextArea(resultTextarea)) {
+        resultTextarea.value = "";
+    }
     matchesCount.innerText = "";
     selectedItemIndex = -1;
-    smallFormCheckbox.checked = false;
+    if (isInput(smallFormCheckbox)) {
+        smallFormCheckbox.checked = false;
+    }
     // Remove the highlights on the page
     // Add this script to the current tab , first arguments (null) gives the current tab
     browser.tabs.executeScript(null, {
@@ -381,15 +407,23 @@ resetButton.addEventListener("click", (e) => {
 // Open Color Highlight Modal
 colorButton.addEventListener("click", (e) => {
     if (highlightColor && highlightColor[0] == "#") {
-        customColorRadio.checked = true;
-        customColorInput.value = highlightColor.substring(1);
+        if (isInput(customColorRadio)) {
+            customColorRadio.checked = true;
+        }
+        if (isInput(customColorInput)) {
+            customColorInput.value = highlightColor.substring(1);
+        }
     }
     else {
         document.querySelector("input[name='color'][value='" + highlightColor + "']").checked = true;
     }
     if (highlightBorderColor && highlightBorderColor[0] == "#") {
-        customBorderColorRadio.checked = true;
-        customBorderColorInput.value = highlightBorderColor.substring(1);
+        if (isInput(customBorderColorRadio)) {
+            customBorderColorRadio.checked = true;
+        }
+        if (isInput(customBorderColorInput)) {
+            customBorderColorInput.value = highlightBorderColor.substring(1);
+        }
     }
     else {
         document.querySelector("input[name='borderColor'][value='" + highlightBorderColor + "'").checked = true;
@@ -399,35 +433,47 @@ colorButton.addEventListener("click", (e) => {
 updateColorButton.addEventListener("click", (e) => {
     highlightColor = document.querySelector("input[name='color']:checked").value;
     if (highlightColor === "custom")
-        highlightColor = "#" + customColorInput.value;
+        highlightColor = "#" + asInput(customColorInput)?.value;
     highlightBorderColor = document.querySelector("input[name='borderColor']:checked").value;
     if (highlightBorderColor === "custom")
-        highlightBorderColor = "#" + customBorderColorInput.value;
+        highlightBorderColor = "#" + asInput(customBorderColorInput)?.value;
     storeHighlightColor();
     storeHighlightBorderColor();
 });
 // Update save model inputs
 function updateSaveModal() {
-    regexInput_modal.value = regexInput.value;
-    templateInput_modal.value = templateInput.value;
-    globalCheckbox_modal.checked = globalCheckbox.checked;
-    caseInsensitiveCheckbox_modal.checked = caseInsensitiveCheckbox.checked;
-    multilineCheckbox_modal.checked = multilineCheckbox.checked;
-    IgnoreHTMLCheckbox_modal.checked = IgnoreHTMLCheckbox.checked;
+    if (isInput(regexInput_modal)) {
+        regexInput_modal.value = asInput(regexInput)?.value;
+    }
+    if (isInput(templateInput_modal)) {
+        templateInput_modal.value = asInput(templateInput)?.value;
+    }
+    if (isInput(globalCheckbox_modal)) {
+        globalCheckbox_modal.checked = asInput(globalCheckbox)?.checked;
+    }
+    if (isInput(caseInsensitiveCheckbox_modal)) {
+        caseInsensitiveCheckbox_modal.checked = asInput(caseInsensitiveCheckbox)?.checked;
+    }
+    if (isInput(multilineCheckbox_modal)) {
+        multilineCheckbox_modal.checked = asInput(multilineCheckbox)?.checked;
+    }
+    if (isInput(IgnoreHTMLCheckbox_modal)) {
+        IgnoreHTMLCheckbox_modal.checked = asInput(IgnoreHTMLCheckbox)?.checked;
+    }
 }
 //  === Storage functions ===
 // store current data for the next session if the user exits by mistake
 function storeCurrent() {
     let currentData = {
-        regexInput: regexInput.value,
-        templateInput: templateInput.value,
-        globalCheckbox: globalCheckbox.checked,
-        caseInsensitiveCheckbox: caseInsensitiveCheckbox.checked,
-        multilineCheckbox: multilineCheckbox.checked,
-        IgnoreHTMLCheckbox: IgnoreHTMLCheckbox.checked,
-        resultTextarea: resultTextarea.value,
+        regexInput: asInput(regexInput)?.value,
+        templateInput: asInput(templateInput)?.value,
+        globalCheckbox: asInput(globalCheckbox)?.checked,
+        caseInsensitiveCheckbox: asInput(caseInsensitiveCheckbox)?.checked,
+        multilineCheckbox: asInput(multilineCheckbox)?.checked,
+        IgnoreHTMLCheckbox: asInput(IgnoreHTMLCheckbox)?.checked,
+        resultTextarea: asTextArea(resultTextarea)?.value,
         selectedItemIndex: selectedItemIndex,
-        smallForm: smallFormCheckbox.checked
+        smallForm: asInput(smallFormCheckbox)?.checked
     };
     let store = browser.storage.local.set({
         currentData
@@ -452,17 +498,33 @@ function getCurrent() {
         highlightBorderColor: "magenta"
     });
     store.then(function (results) {
-        regexInput.value = results.currentData.regexInput;
-        templateInput.value = results.currentData.templateInput;
-        globalCheckbox.checked = results.currentData.globalCheckbox;
-        caseInsensitiveCheckbox.checked = results.currentData.caseInsensitiveCheckbox;
-        multilineCheckbox.checked = results.currentData.multilineCheckbox;
-        IgnoreHTMLCheckbox.checked = results.currentData.IgnoreHTMLCheckbox;
-        resultTextarea.value = results.currentData.resultTextarea;
+        if (isInput(regexInput)) {
+            regexInput.value = results.currentData.regexInput;
+        }
+        if (isInput(templateInput)) {
+            templateInput.value = results.currentData.templateInput;
+        }
+        if (isInput(globalCheckbox)) {
+            globalCheckbox.checked = results.currentData.globalCheckbox;
+        }
+        if (isInput(caseInsensitiveCheckbox)) {
+            caseInsensitiveCheckbox.checked = results.currentData.caseInsensitiveCheckbox;
+        }
+        if (isInput(multilineCheckbox)) {
+            multilineCheckbox.checked = results.currentData.multilineCheckbox;
+        }
+        if (isInput(IgnoreHTMLCheckbox)) {
+            IgnoreHTMLCheckbox.checked = results.currentData.IgnoreHTMLCheckbox;
+        }
+        if (isTextArea(resultTextarea)) {
+            resultTextarea.value = results.currentData.resultTextarea;
+        }
         selectedItemIndex = results.currentData.selectedItemIndex;
         highlightColor = results.highlightColor;
-        highlightBorderColor = results.highlightBorderColor,
+        highlightBorderColor = results.highlightBorderColor;
+        if (isInput(smallFormCheckbox)) {
             smallFormCheckbox.checked = results.currentData.smallForm;
+        }
         smallFormCheckboxChange("");
         updateSaveModal();
     }, onError);
@@ -509,12 +571,24 @@ function getProfile(profileId) {
         var profiles = results.profiles;
         for (var i = 0; i < profiles.length; i++) {
             if (profileId == profiles[i].id) {
-                regexInput.value = profiles[i].regex;
-                templateInput.value = profiles[i].template;
-                globalCheckbox.checked = profiles[i].globalFlag;
-                caseInsensitiveCheckbox.checked = profiles[i].caseInsensitiveFlag;
-                multilineCheckbox.checked = profiles[i].multilineFlag;
-                IgnoreHTMLCheckbox.checked = profiles[i].IgnoreHTML ? true : false;
+                if (isInput(smallFormCheckbox)) {
+                    smallFormCheckbox.value = profiles[i].regex;
+                }
+                if (isInput(templateInput)) {
+                    templateInput.value = profiles[i].template;
+                }
+                if (isInput(globalCheckbox)) {
+                    globalCheckbox.checked = profiles[i].globalFlag;
+                }
+                if (isInput(caseInsensitiveCheckbox)) {
+                    caseInsensitiveCheckbox.checked = profiles[i].caseInsensitiveFlag;
+                }
+                if (isInput(multilineCheckbox)) {
+                    multilineCheckbox.checked = profiles[i].multilineFlag;
+                }
+                if (isInput(IgnoreHTMLCheckbox)) {
+                    IgnoreHTMLCheckbox.checked = profiles[i].IgnoreHTML ? true : false;
+                }
                 break;
             }
         }
@@ -546,3 +620,9 @@ function profile(id, name, regex, globalFlag, caseInsensitiveFlag, multilineFlag
 function getID() {
     return Math.floor((Math.random() * 99999999999) + 1);
 }
+const isAnchor = (element) => element instanceof HTMLAnchorElement;
+const asAnchor = (element) => isAnchor(element) ? element : undefined;
+const isInput = (element) => element instanceof HTMLInputElement;
+const asInput = (element) => isInput(element) ? element : undefined;
+const isTextArea = (element) => element instanceof HTMLTextAreaElement;
+const asTextArea = (element) => isTextArea(element) ? element : undefined;

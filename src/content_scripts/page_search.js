@@ -62,7 +62,7 @@ function search(request, sender, sendResponse) {
             //highlight and scroll down to the item
             if (elementMatches.length > selectedItemIndex + 1) {
                 selectedItemIndex = selectedItemIndex + 1;
-                el = elementMatches[selectedItemIndex];
+                var el = elementMatches[selectedItemIndex];
                 el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
                 el.style.backgroundColor = request.highlightColor;
                 el.style.border = `2px solid ${request.highlightBorderColor}`;
@@ -96,7 +96,7 @@ function search(request, sender, sendResponse) {
             //highlight and scroll down to the item
             if (selectedItemIndex - 1 >= 0) {
                 selectedItemIndex = selectedItemIndex - 1;
-                el = elementMatches[selectedItemIndex];
+                var el = elementMatches[selectedItemIndex];
                 el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
                 el.style.backgroundColor = request.highlightColor;
                 el.style.border = `2px solid ${request.highlightBorderColor}`;

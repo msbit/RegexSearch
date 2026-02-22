@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.3",
+    "@types/firefox-webext-browser": "*",
+    "@types/jquery": "*",
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "npm": "^9.6.6",
-    "typescript": "*",
+    "typescript": "5.3.3",
     "vite": "^4.3.6",
     "vite-plugin-static-copy": "^0.15.0",
     "web-ext": "^7.6.2"

@@ -11,13 +11,13 @@ document.addEventListener("DOMContentLoaded", displayProfiles);
 
 function saveButtonClicked(e){
     const id = e.target.getAttribute("storageID");
-    const profileName = document.querySelector('[storageID="'+ id + '"][name="profileNameInput"]');
-    const regex = document.querySelector('[storageID="'+ id + '"][name="regex"]');
-    const Global = document.querySelector('[storageID="'+ id + '"][name="Global"]');
-    const CaseInsensitive = document.querySelector('[storageID="'+ id + '"][name="Case-insensitive"]');
-    const Multiline = document.querySelector('[storageID="'+ id + '"][name="Multiline"]');
-    const IgnoreHTML = document.querySelector('[storageID="'+ id + '"][name="IgnoreHTML"]');
-    const template = document.querySelector('[storageID="'+ id + '"][name="template"]');
+    const profileName = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="profileNameInput"]');
+    const regex = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="regex"]');
+    const Global = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="Global"]');
+    const CaseInsensitive = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="Case-insensitive"]');
+    const Multiline = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="Multiline"]');
+    const IgnoreHTML = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="IgnoreHTML"]');
+    const template = document.querySelector<HTMLInputElement>('[storageID="'+ id + '"][name="template"]');
 
     updateProfile(id, profileName.value, regex.value, Global.checked, CaseInsensitive.checked, Multiline.checked, template.value, IgnoreHTML.checked);
 }
@@ -79,9 +79,9 @@ function addProfileToAList(profile) {
   </div>\
   </div></div>';
   listItem.querySelector('.panel-heading').innerHTML = profile.name; // profile name  Heading
-  listItem.querySelector('.profileNameInput').value = profile.name; // profile name Input
-  listItem.querySelector('.regex').value = profile.regex; // regex Input
-  listItem.querySelector('.template').value = profile.template; // template Input
+  listItem.querySelector<HTMLInputElement>('.profileNameInput').value = profile.name; // profile name Input
+  listItem.querySelector<HTMLInputElement>('.regex').value = profile.regex; // regex Input
+  listItem.querySelector<HTMLInputElement>('.template').value = profile.template; // template Input
 
   profilesList.appendChild(listItem);
 

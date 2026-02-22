@@ -1,3 +1,12 @@
+declare function findAndReplaceDOMText(
+  node: HTMLElement,
+  options: {
+    find: RegExp;
+    wrap: 'span';
+    wrapClass: 'regexSearchMatch'|'regexSearchHighlighter';
+  },
+): void;
+
 function search(request, sender, sendResponse) {
   try {
     if (request.action == "search") {
@@ -19,7 +28,7 @@ function search(request, sender, sendResponse) {
       // send response to popup script
       sendResponse({ results: matches });
     } else if (request.action == "highlight") {
-      var previousHighlighters = document.querySelectorAll(".regexSearchHighlighter");
+      var previousHighlighters = document.querySelectorAll<HTMLElement>(".regexSearchHighlighter");
 
       previousHighlighters.forEach((highlight) => {
         highlight.style.backgroundColor = "transparent";
@@ -34,7 +43,7 @@ function search(request, sender, sendResponse) {
         wrapClass: "regexSearchHighlighter"
       });
 
-      var newHighlighters = document.querySelectorAll(".regexSearchHighlighter");
+      var newHighlighters = document.querySelectorAll<HTMLElement>(".regexSearchHighlighter");
       newHighlighters.forEach((highlight) => {
         highlight.style.backgroundColor = request.highlightColor;
       });
@@ -50,7 +59,7 @@ function search(request, sender, sendResponse) {
           wrapClass: "regexSearchMatch"
         });
       }
-      var elementMatches = document.querySelectorAll(".regexSearchMatch");
+      var elementMatches = document.querySelectorAll<HTMLElement>(".regexSearchMatch");
       if (selectedItemIndex == -1) {
         for (let index = 0; index < elementMatches.length; index++) {
           matches.push(elementMatches[index].innerText)
@@ -65,7 +74,7 @@ function search(request, sender, sendResponse) {
       //highlight and scroll down to the item
       if (elementMatches.length > selectedItemIndex+1){
         selectedItemIndex = selectedItemIndex + 1;
-        el = elementMatches[selectedItemIndex];
+        var el = elementMatches[selectedItemIndex];
         el.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
         el.style.backgroundColor = request.highlightColor;
         el.style.border=`2px solid ${request.highlightBorderColor}`
@@ -84,7 +93,7 @@ function search(request, sender, sendResponse) {
           wrapClass: "regexSearchMatch"
         });
       }
-      var elementMatches = document.querySelectorAll(".regexSearchMatch");
+      var elementMatches = document.querySelectorAll<HTMLElement>(".regexSearchMatch");
       if (selectedItemIndex == -1) {
         for (let index = 0; index < elementMatches.length; index++) {
           matches.push(elementMatches[index].innerText)
@@ -100,7 +109,7 @@ function search(request, sender, sendResponse) {
       //highlight and scroll down to the item
       if (selectedItemIndex-1>=0){
         selectedItemIndex = selectedItemIndex - 1;
-        el = elementMatches[selectedItemIndex];
+        var el = elementMatches[selectedItemIndex];
         el.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
         el.style.backgroundColor = request.highlightColor;
         el.style.border=`2px solid ${request.highlightBorderColor}`
@@ -424,7 +433,7 @@ Finder.prototype = {
        return [];
      }
 
-     var txt = [''];
+     var txt: (string|string[])[] = [''];
      var i = 0;
 
      if (node = node.firstChild) do {
