@@ -2,53 +2,42 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "../css/style.css";
 import "./options.css";
-
 var profilesList = document.querySelector("#profilesList");
-
 document.addEventListener("DOMContentLoaded", displayProfiles);
-
-
-
-function saveButtonClicked(e){
+function saveButtonClicked(e) {
     const id = e.target.getAttribute("storageID");
-    const profileName = document.querySelector('[storageID="'+ id + '"][name="profileNameInput"]');
-    const regex = document.querySelector('[storageID="'+ id + '"][name="regex"]');
-    const Global = document.querySelector('[storageID="'+ id + '"][name="Global"]');
-    const CaseInsensitive = document.querySelector('[storageID="'+ id + '"][name="Case-insensitive"]');
-    const Multiline = document.querySelector('[storageID="'+ id + '"][name="Multiline"]');
-    const IgnoreHTML = document.querySelector('[storageID="'+ id + '"][name="IgnoreHTML"]');
-    const template = document.querySelector('[storageID="'+ id + '"][name="template"]');
-
+    const profileName = document.querySelector('[storageID="' + id + '"][name="profileNameInput"]');
+    const regex = document.querySelector('[storageID="' + id + '"][name="regex"]');
+    const Global = document.querySelector('[storageID="' + id + '"][name="Global"]');
+    const CaseInsensitive = document.querySelector('[storageID="' + id + '"][name="Case-insensitive"]');
+    const Multiline = document.querySelector('[storageID="' + id + '"][name="Multiline"]');
+    const IgnoreHTML = document.querySelector('[storageID="' + id + '"][name="IgnoreHTML"]');
+    const template = document.querySelector('[storageID="' + id + '"][name="template"]');
     updateProfile(id, profileName.value, regex.value, Global.checked, CaseInsensitive.checked, Multiline.checked, template.value, IgnoreHTML.checked);
 }
-function deleteButtonClicked(e){
-  const id = e.target.getAttribute("storageID");
-  deleteProfile(id);
+function deleteButtonClicked(e) {
+    const id = e.target.getAttribute("storageID");
+    deleteProfile(id);
 }
-
-
 function displayProfiles() {
-  var store = browser.storage.local.get({
-    profiles: []
-  });
-  store.then(function(results) {
-    var profiles = results.profiles;
-    console.log(profiles);
-    for (var i = 0; i < profiles.length; i++) {
-      console.log(profiles[i]);
-      addProfileToAList(profiles[i]);
-
-    }
-  } , console.log);
+    var store = browser.storage.local.get({
+        profiles: []
+    });
+    store.then(function (results) {
+        var profiles = results.profiles;
+        console.log(profiles);
+        for (var i = 0; i < profiles.length; i++) {
+            console.log(profiles[i]);
+            addProfileToAList(profiles[i]);
+        }
+    }, console.log);
 }
 function addProfileToAList(profile) {
-  
-  // fix if the profile doesn't have IgnoreHTML
-  profile.IgnoreHTML = profile.IgnoreHTML ? true : false;
-
-  var listItem = document.createElement("div");
-  listItem.setAttribute("class", "col-md-6 col-xs-12");
-  listItem.innerHTML = '<div class="panel panel-default  ">\
+    // fix if the profile doesn't have IgnoreHTML
+    profile.IgnoreHTML = profile.IgnoreHTML ? true : false;
+    var listItem = document.createElement("div");
+    listItem.setAttribute("class", "col-md-6 col-xs-12");
+    listItem.innerHTML = '<div class="panel panel-default  ">\
   <div class="panel-heading" storageID="' + profile.id + '"></div>\
   <div class="panel-body">\
   <div class="form-group">\
@@ -78,73 +67,56 @@ function addProfileToAList(profile) {
     <button class="btn btn-danger deleteButton" storageID="' + profile.id + '" id="searchButton"><span class="glyphicon glyphicon-remove"></span> Delete</button>\
   </div>\
   </div></div>';
-  listItem.querySelector('.panel-heading').innerHTML = profile.name; // profile name  Heading
-  listItem.querySelector('.profileNameInput').value = profile.name; // profile name Input
-  listItem.querySelector('.regex').value = profile.regex; // regex Input
-  listItem.querySelector('.template').value = profile.template; // template Input
-
-  profilesList.appendChild(listItem);
-
-  var saveButtons = document.getElementsByClassName("saveButton");
-  saveButtons[saveButtons.length - 1].addEventListener("click", saveButtonClicked);
-
-  var deleteButtons = document.getElementsByClassName("deleteButton");
-  deleteButtons[deleteButtons.length - 1].addEventListener("click", deleteButtonClicked);
+    listItem.querySelector('.panel-heading').innerHTML = profile.name; // profile name  Heading
+    listItem.querySelector('.profileNameInput').value = profile.name; // profile name Input
+    listItem.querySelector('.regex').value = profile.regex; // regex Input
+    listItem.querySelector('.template').value = profile.template; // template Input
+    profilesList.appendChild(listItem);
+    var saveButtons = document.getElementsByClassName("saveButton");
+    saveButtons[saveButtons.length - 1].addEventListener("click", saveButtonClicked);
+    var deleteButtons = document.getElementsByClassName("deleteButton");
+    deleteButtons[deleteButtons.length - 1].addEventListener("click", deleteButtonClicked);
 }
-
-
-function deleteProfile(profileId){
-  var store = browser.storage.local.get({
-    profiles: []
-  }).then((results) =>{
-    var profiles = results.profiles;
-
-    for (var i = 0; i < profiles.length; i++) {
-      if (profileId == profiles[i].id) {
-        profiles.splice(i , 1);
-        updateProfiles(profiles);
-        break;
-      }
-    }
-  }).catch(()=>{
-
-  });
+function deleteProfile(profileId) {
+    var store = browser.storage.local.get({
+        profiles: []
+    }).then((results) => {
+        var profiles = results.profiles;
+        for (var i = 0; i < profiles.length; i++) {
+            if (profileId == profiles[i].id) {
+                profiles.splice(i, 1);
+                updateProfiles(profiles);
+                break;
+            }
+        }
+    }).catch(() => {
+    });
 }
-
-function updateProfile(profileId, newName, newRegex, newGlobal, newCase, newMultiline, newTemplate, newIgnoreHTML){
-  var store = browser.storage.local.get({
-    profiles: []
-  }).then((results) =>{
-    var profiles = results.profiles;
-
-    for (var i = 0; i < profiles.length; i++) {
-      if (profileId == profiles[i].id) {
-        profiles[i].name = newName;
-        profiles[i].regex = newRegex;
-        profiles[i].globalFlag = newGlobal;
-        profiles[i].caseInsensitiveFlag = newCase;
-        profiles[i].multilineFlag = newMultiline;
-        profiles[i].template = newTemplate;
-        profiles[i].IgnoreHTML = newIgnoreHTML;
-        
-
-        updateProfiles(profiles);
-        break;
-      }
-    }
-  }).catch(()=>{
-
-  });
+function updateProfile(profileId, newName, newRegex, newGlobal, newCase, newMultiline, newTemplate, newIgnoreHTML) {
+    var store = browser.storage.local.get({
+        profiles: []
+    }).then((results) => {
+        var profiles = results.profiles;
+        for (var i = 0; i < profiles.length; i++) {
+            if (profileId == profiles[i].id) {
+                profiles[i].name = newName;
+                profiles[i].regex = newRegex;
+                profiles[i].globalFlag = newGlobal;
+                profiles[i].caseInsensitiveFlag = newCase;
+                profiles[i].multilineFlag = newMultiline;
+                profiles[i].template = newTemplate;
+                profiles[i].IgnoreHTML = newIgnoreHTML;
+                updateProfiles(profiles);
+                break;
+            }
+        }
+    }).catch(() => {
+    });
 }
-
-
-
 function updateProfiles(newProfiles) {
-  var store = browser.storage.local.set({
-    profiles: newProfiles
-  }).then(
-    () => {
-       location.reload();
-    }
-  );
+    var store = browser.storage.local.set({
+        profiles: newProfiles
+    }).then(() => {
+        location.reload();
+    });
 }
